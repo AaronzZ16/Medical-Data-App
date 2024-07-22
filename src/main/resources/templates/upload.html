@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload CSV</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 80%;
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+        h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+        }
+        .checkbox-group label {
+            width: 100%;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Upload CSV</h1>
+    <form method="post" enctype="multipart/form-data" action="/csv/upload">
+        <input type="file" name="file" accept=".csv" required />
+        <h3>Select columns to plot:</h3>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="columns" value="heartRate"> Heart Rate</label>
+            <label><input type="checkbox" name="columns" value="bloodPressureSystolic"> Systolic BP</label>
+            <label><input type="checkbox" name="columns" value="bloodPressureDiastolic"> Diastolic BP</label>
+            <label><input type="checkbox" name="columns" value="oxygenLevel"> Oxygen Level</label>
+            <label><input type="checkbox" name="columns" value="bodyTemperature"> Body Temperature</label>
+        </div>
+        <input type="submit" value="Upload">
+    </form>
+</div>
+</body>
+</html>

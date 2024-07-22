@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+            background: #fff;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input[type="text"]:read-only {
+            background-color: #f9f9f9;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Edit Data</h1>
+    <form th:action="@{/csv/edit}" th:object="${data}" method="post">
+        <input type="hidden" th:field="*{id}">
+        <label for="timestamp">Timestamp:</label>
+        <input type="text" id="timestamp" th:field="*{timestamp}" readonly><br>
+        <label for="patientId">Patient ID:</label>
+        <input type="text" id="patientId" th:field="*{patientId}"><br>
+        <label for="heartRate">Heart Rate:</label>
+        <input type="text" id="heartRate" th:field="*{heartRate}"><br>
+        <label for="bloodPressureSystolic">Systolic BP:</label>
+        <input type="text" id="bloodPressureSystolic" th:field="*{bloodPressureSystolic}"><br>
+        <label for="bloodPressureDiastolic">Diastolic BP:</label>
+        <input type="text" id="bloodPressureDiastolic" th:field="*{bloodPressureDiastolic}"><br>
+        <label for="oxygenLevel">Oxygen Level:</label>
+        <input type="text" id="oxygenLevel" th:field="*{oxygenLevel}"><br>
+        <label for="bodyTemperature">Body Temperature:</label>
+        <input type="text" id="bodyTemperature" th:field="*{bodyTemperature}"><br>
+        <button type="submit">Save</button>
+    </form>
+    <a href="/csv/upload">Back to Upload</a>
+</div>
+</body>
+</html>

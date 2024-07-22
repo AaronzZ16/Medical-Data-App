@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            background: #fff;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        form {
+            display: inline;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .btn-delete {
+            background-color: #f44336;
+        }
+        .btn-delete:hover {
+            background-color: #e53935;
+        }
+        .chart-container {
+            width: 100%;
+            text-align: center;
+        }
+        .chart-container img {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Upload Result</h1>
+    <p><b>Data From Csv</b></p>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Timestamp</th>
+            <th>Patient ID</th>
+            <th>Heart Rate</th>
+            <th>Systolic BP</th>
+            <th>Diastolic BP</th>
+            <th>Oxygen Level</th>
+            <th>Body Temperature</th>
+            <th>Actions</th>
+        </tr>
+        <tr th:each="data : ${resultList}">
+            <td th:text="${data.id}">ID</td>
+            <td th:text="${data.timestamp}">Timestamp</td>
+            <td th:text="${data.patientId}">Patient ID</td>
+            <td th:text="${data.heartRate}">Heart Rate</td>
+            <td th:text="${data.bloodPressureSystolic}">Systolic BP</td>
+            <td th:text="${data.bloodPressureDiastolic}">Diastolic BP</td>
+            <td th:text="${data.oxygenLevel}">Oxygen Level</td>
+            <td th:text="${data.bodyTemperature}">Body Temperature</td>
+            <td>
+                <form method="post" th:action="@{'/csv/delete/' + ${data.id}}">
+                    <input type="submit" value="Delete" class="btn btn-delete"/>
+                </form>
+                <form method="get" th:action="@{'/csv/edit/' + ${data.id}}">
+                    <input type="submit" value="Edit" class="btn"/>
+                </form>
+            </td>
+        </tr>
+    </table>
+    <a href="/csv/upload" class="btn">Back to Upload</a>
+    <form method="post" th:action="@{'/csv/deleteAll'}" style="display:inline;">
+        <input type="submit" value="Delete All" class="btn btn-delete"/>
+    </form>
+    <br><br>
+    <form method="post" th:action="@{'/csv/generateCharts'}">
+        <label for="columns">Select columns to generate charts:</label>
+        <select id="columns" name="columns" multiple>
+            <option value="heartRate">Heart Rate</option>
+            <option value="bloodPressureSystolic">Systolic BP</option>
+            <option value="bloodPressureDiastolic">Diastolic BP</option>
+            <option value="oxygenLevel">Oxygen Level</option>
+            <option value="bodyTemperature">Body Temperature</option>
+        </select>
+        <input type="submit" value="Generate Charts" class="btn"/>
+    </form>
+    <div class="chart-container" th:if="${heartRateChart}">
+        <h2>Heart Rate Chart</h2>
+        <img th:src="'data:image/png;base64,' + ${heartRateChart}" alt="Heart Rate Chart"/>
+    </div>
+    <div class="chart-container" th:if="${bloodPressureSystolicChart}">
+        <h2>Systolic BP Chart</h2>
+        <img th:src="'data:image/png;base64,' + ${bloodPressureSystolicChart}" alt="Systolic BP Chart"/>
+    </div>
+    <div class="chart-container" th:if="${bloodPressureDiastolicChart}">
+        <h2>Diastolic BP Chart</h2>
+        <img th:src="'data:image/png;base64,' + ${bloodPressureDiastolicChart}" alt="Diastolic BP Chart"/>
+    </div>
+    <div class="chart-container" th:if="${oxygenLevelChart}">
+        <h2>Oxygen Level Chart</h2>
+        <img th:src="'data:image/png;base64,' + ${oxygenLevelChart}" alt="Oxygen Level Chart"/>
+    </div>
+    <div class="chart-container" th:if="${bodyTemperatureChart}">
+        <h2>Body Temperature Chart</h2>
+        <img th:src="'data:image/png;base64,' + ${bodyTemperatureChart}" alt="Body Temperature Chart"/>
+    </div>
+    <br>
+    <form method="post" enctype="multipart/form-data" th:action="@{'/csv/upload'}">
+        <label for="file">Upload New CSV File:</label>
+        <input type="file" id="file" name="file"/>
+        <label for="columns">Select columns to plot:</label>
+        <select id="columns" name="columns" multiple>
+            <option value="heartRate">Heart Rate</option>
+            <option value="bloodPressureSystolic">Systolic BP</option>
+            <option value="bloodPressureDiastolic">Diastolic BP</option>
+            <option value="oxygenLevel">Oxygen Level</option>
+            <option value="bodyTemperature">Body Temperature</option>
+        </select>
+        <input type="submit" value="Upload" class="btn"/>
+    </form>
+</div>
+</body>
+</html>
