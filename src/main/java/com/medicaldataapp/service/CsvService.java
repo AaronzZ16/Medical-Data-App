@@ -3,6 +3,9 @@ package com.medicaldataapp.service;
 import com.medicaldataapp.entity.TimeSeriesData;
 import com.medicaldataapp.repository.TimeSeriesDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -44,31 +47,9 @@ public class CsvService {
                     continue;
                 }
                 try {
-                    Timestamp timestamp = Timestamp.valueOf(LocalDateTime.parse(fields[0].trim(), dateTimeFormatter));
-                    String patientId = fields[1].trim();
-                    Optional<TimeSeriesData> existingData = repository.findByTimestampAndPatientId(timestamp, patientId);
-                    if (existingData.isPresent()) {
-                        // 更新已存在的数据
-                        TimeSeriesData data = existingData.get();
-                        data.setHeartRate(Double.parseDouble(fields[2].trim()));
-                        data.setBloodPressureSystolic(Double.parseDouble(fields[3].trim()));
-                        data.setBloodPressureDiastolic(Double.parseDouble(fields[4].trim()));
-                        data.setOxygenLevel(Double.parseDouble(fields[5].trim()));
-                        data.setBodyTemperature(Double.parseDouble(fields[6].trim()));
-                        repository.save(data);
-                    } else {
-                        // 保存新数据
-                        TimeSeriesData data = new TimeSeriesData();
-                        data.setTimestamp(timestamp);
-                        data.setPatientId(patientId);
-                        data.setHeartRate(Double.parseDouble(fields[2].trim()));
-                        data.setBloodPressureSystolic(Double.parseDouble(fields[3].trim()));
-                        data.setBloodPressureDiastolic(Double.parseDouble(fields[4].trim()));
-                        data.setOxygenLevel(Double.parseDouble(fields[5].trim()));
-                        data.setBodyTemperature(Double.parseDouble(fields[6].trim()));
-                        repository.save(data);
-                        dataList.add(data);
-                    }
+                    TimeSeriesData data = parseLine(fields);
+                    repository.save(data);
+                    dataList.add(data);
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 }
@@ -79,15 +60,57 @@ public class CsvService {
         return dataList;
     }
 
+    private TimeSeriesData parseLine(String[] fields) {
+        Timestamp timestamp = Timestamp.valueOf(LocalDateTime.parse(fields[0].trim(), dateTimeFormatter));
+        String patientId = fields[1].trim();
+        Optional<TimeSeriesData> existingData = repository.findByTimestampAndPatientId(timestamp, patientId);
+        TimeSeriesData data;
+        if (existingData.isPresent()) {
+            data = existingData.get();
+        } else {
+            data = new TimeSeriesData();
+            data.setTimestamp(timestamp);
+            data.setPatientId(patientId);
+        }
+        data.setHeartRate(Double.parseDouble(fields[2].trim()));
+        data.setBloodPressureSystolic(Double.parseDouble(fields[3].trim()));
+        data.setBloodPressureDiastolic(Double.parseDouble(fields[4].trim()));
+        data.setOxygenLevel(Double.parseDouble(fields[5].trim()));
+        data.setBodyTemperature(Double.parseDouble(fields[6].trim()));
+        return data;
+    }
+
     public void deleteDataById(Long id) {
-        repository.deleteById(id);
+        if (isAdmin()) {
+            repository.deleteById(id);
+        } else {
+            throw new SecurityException("You do not have permission to delete data.");
+        }
     }
 
     public void deleteAllData() {
-        repository.deleteAll();
+        if (isAdmin()) {
+            repository.deleteAll();
+        } else {
+            throw new SecurityException("You do not have permission to delete data.");
+        }
     }
 
     public void updateData(TimeSeriesData data) {
-        repository.save(data);
+        if (isAdmin()) {
+            repository.save(data);
+        } else {
+            throw new SecurityException("You do not have permission to edit data.");
+        }
+    }
+
+    private boolean isAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            return userDetails.getAuthorities().stream()
+                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        }
+        return false;
     }
 }

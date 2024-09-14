@@ -30,7 +30,7 @@
             margin-top: 10px;
             font-weight: bold;
         }
-        input[type="text"] {
+        input[type="text"], input[type="number"] {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -75,17 +75,17 @@
         <label for="timestamp">Timestamp:</label>
         <input type="text" id="timestamp" th:field="*{timestamp}" readonly><br>
         <label for="patientId">Patient ID:</label>
-        <input type="text" id="patientId" th:field="*{patientId}"><br>
+        <input type="text" id="patientId" th:field="*{patientId}" required><br>
         <label for="heartRate">Heart Rate:</label>
-        <input type="text" id="heartRate" th:field="*{heartRate}"><br>
+        <input type="number" id="heartRate" th:field="*{heartRate}" step="0.1" required><br>
         <label for="bloodPressureSystolic">Systolic BP:</label>
-        <input type="text" id="bloodPressureSystolic" th:field="*{bloodPressureSystolic}"><br>
+        <input type="number" id="bloodPressureSystolic" th:field="*{bloodPressureSystolic}" step="0.1" required><br>
         <label for="bloodPressureDiastolic">Diastolic BP:</label>
-        <input type="text" id="bloodPressureDiastolic" th:field="*{bloodPressureDiastolic}"><br>
+        <input type="number" id="bloodPressureDiastolic" th:field="*{bloodPressureDiastolic}" step="0.1" required><br>
         <label for="oxygenLevel">Oxygen Level:</label>
-        <input type="text" id="oxygenLevel" th:field="*{oxygenLevel}"><br>
+        <input type="number" id="oxygenLevel" th:field="*{oxygenLevel}" step="0.1" required><br>
         <label for="bodyTemperature">Body Temperature:</label>
-        <input type="text" id="bodyTemperature" th:field="*{bodyTemperature}"><br>
+        <input type="number" id="bodyTemperature" th:field="*{bodyTemperature}" step="0.1" required><br>
         <button type="submit">Save</button>
     </form>
     <a href="/csv/upload">Back to Upload</a>

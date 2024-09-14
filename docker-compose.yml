@@ -1,0 +1,50 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "8090:8090"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/medical_data
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=200116
+      - SPRING_DATASOURCE_DRIVER-CLASS-NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_JPA_HIBERNATE_DDL-AUTO=update
+      - SPRING_JPA_SHOW-SQL=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQLDialect
+      - SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT-SQL=true
+      - SPRING_THYMELEAF_ENABLED=true
+      - SPRING_THYMELEAF_PREFIX=classpath:/templates/
+      - SPRING_THYMELEAF_SUFFIX=.html
+      - SPRING_THYMELEAF_MODE=HTML5
+      - SPRING_THYMELEAF_CACHE=false
+      - SERVER_PORT=8090
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
+      - SPRING_DEVTOOLS_LIVERELOAD_ENABLED=true
+      - SPRING_DATASOURCE_HIKARI_CONNECTION-TIMEOUT=20000
+      - SPRING_DATASOURCE_HIKARI_MINIMUM-IDLE=10
+      - SPRING_DATASOURCE_HIKARI_MAXIMUM-POOL-SIZE=10
+      - SPRING_DATASOURCE_HIKARI_IDLE-TIMEOUT=300000
+      - SPRING_DATASOURCE_HIKARI_MAX-LIFETIME=600000
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.0
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=200116
+      - MYSQL_DATABASE=medical_data
+    networks:
+      - app-network
+
+volumes:
+  db_data:
+
+networks:
+  app-network:
+    external: true

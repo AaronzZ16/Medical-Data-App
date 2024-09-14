@@ -4,6 +4,8 @@ import com.medicaldataapp.entity.TimeSeriesData;
 import com.medicaldataapp.service.ChartService;
 import com.medicaldataapp.service.CsvService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.List;
 
 @Controller
@@ -51,34 +52,52 @@ public class CsvController {
 
     @PostMapping("/csv/delete/{id}")
     public String deleteData(@PathVariable Long id, Model model) {
-        csvService.deleteDataById(id);
-        List<TimeSeriesData> dataList = csvService.getAllData();
-        model.addAttribute("resultList", dataList);
-        model.addAttribute("message", "Data deleted successfully");
+        try {
+            csvService.deleteDataById(id);
+            List<TimeSeriesData> dataList = csvService.getAllData();
+            model.addAttribute("resultList", dataList);
+            model.addAttribute("message", "Data deleted successfully");
+        } catch (SecurityException e) {
+            model.addAttribute("message", e.getMessage());
+        }
         return "result";
     }
 
     @PostMapping("/csv/deleteAll")
     public String deleteAllData(Model model) {
-        csvService.deleteAllData();
-        model.addAttribute("resultList", List.of()); // 清空resultList
-        model.addAttribute("message", "All data deleted successfully");
+        try {
+            csvService.deleteAllData();
+            model.addAttribute("resultList", List.of()); // 清空resultList
+            model.addAttribute("message", "All data deleted successfully");
+        } catch (SecurityException e) {
+            model.addAttribute("message", e.getMessage());
+        }
         return "result";
     }
 
     @GetMapping("/csv/edit/{id}")
     public String editDataForm(@PathVariable Long id, Model model) {
-        TimeSeriesData data = csvService.getDataById(id);
-        model.addAttribute("data", data);
-        return "edit";
+        try {
+            TimeSeriesData data = csvService.getDataById(id);
+            model.addAttribute("data", data);
+            return "edit";
+        } catch (SecurityException e) {
+            model.addAttribute("message", e.getMessage());
+            return "result";
+        }
     }
 
     @PostMapping("/csv/edit")
     public String editData(@ModelAttribute TimeSeriesData data, Model model) {
-        csvService.updateData(data);
-        List<TimeSeriesData> dataList = csvService.getAllData();
-        model.addAttribute("resultList", dataList);
-        return "result";
+        try {
+            csvService.updateData(data);
+            List<TimeSeriesData> dataList = csvService.getAllData();
+            model.addAttribute("resultList", dataList);
+            return "result";
+        } catch (SecurityException e) {
+            model.addAttribute("message", e.getMessage());
+            return "result";
+        }
     }
 
     @PostMapping("/csv/generateCharts")
@@ -97,7 +116,7 @@ public class CsvController {
         try {
             for (String column : columns) {
                 byte[] chart = chartService.generateChart(column);
-                model.addAttribute(column + "Chart", Base64.getEncoder().encodeToString(chart));
+                model.addAttribute(column + "Chart", java.util.Base64.getEncoder().encodeToString(chart));
             }
         } catch (IOException e) {
             e.printStackTrace();

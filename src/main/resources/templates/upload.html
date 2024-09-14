@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Upload CSV</title>
     <style>
@@ -60,6 +60,9 @@
         input[type="submit"]:hover {
             background-color: #45a049;
         }
+        .logout {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -76,6 +79,9 @@
             <label><input type="checkbox" name="columns" value="bodyTemperature"> Body Temperature</label>
         </div>
         <input type="submit" value="Upload">
+    </form>
+    <form class="logout" method="post" action="/logout">
+        <input type="submit" value="Logout">
     </form>
 </div>
 </body>

@@ -10,7 +10,6 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("message", "Welcome to the Medical Data App!");
-        return "home"; // 返回视图的名称，这里是 home.html
+        return "home";
     }
 }
-
